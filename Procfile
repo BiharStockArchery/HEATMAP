@@ -1,4 +1,5 @@
-web: gunicorn index:app
+web: python index.py
+
 
 
 
