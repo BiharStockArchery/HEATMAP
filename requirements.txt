@@ -1,5 +1,5 @@
 Flask==2.1.2
-Flask-Cors==5.0.0  # Or another version that is available
-yfinance==0.1.76
+Flask-Cors==5.0.0
+yfinance==0.2.52  # Latest available version
 apscheduler==3.8.1
 pytz==2021.1
