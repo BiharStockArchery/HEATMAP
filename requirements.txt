@@ -1,6 +1,7 @@
 Flask==2.1.2
 Flask-Cors==5.0.0
-yfinance==0.1.76  # Older version compatible with pytz==2021.1
+yfinance==0.2.52  # Update to the latest compatible version
 apscheduler==3.8.1
-pytz==2021.1  # Keep the version as it is
+pytz>=2022.5  # Ensure pytz version is compatible
+
 
