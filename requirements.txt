@@ -3,5 +3,5 @@ Flask-Cors==5.0.0
 yfinance==0.2.52  # Update to the latest compatible version
 apscheduler==3.8.1
 pytz>=2022.5  # Ensure pytz version is compatible
-
+gunicorn
 
