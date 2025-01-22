@@ -11,7 +11,10 @@ app = Flask(__name__)
 # Enable CORS for the Flask app
 CORS(app)
 
-# List of sector-wise stock symbols from NSE
+@app.route("/")
+def home():
+    return "Hello, Railway!"
+
 symbols = [
     "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS","ACC.NS",
 "APLAPOLLO.NS",
@@ -242,11 +245,8 @@ IST = pytz.timezone('Asia/Kolkata')
 
 def get_sector_data():
     try:
-        # Get the current date and time
-        now = datetime.now(IST)
-
         # Fetch 5 days of minute-level data to get the high, low and previous day's close prices
-        data = yf.download(symbols, period="5d", interval="1m")  # 5-day minute-level data
+        data = yf.download(symbols, period="5d", interval="1m")
 
         # Debugging: Print fetched data
         print("Fetched data:\n", data)
@@ -263,16 +263,11 @@ def get_sector_data():
 
         # Loop through the stock symbols and calculate data for each
         for symbol in symbols:
-            # Get the previous day's closing price (last row in 'Adj Close' or 'Close' column)
             previous_day_close = stock_data[symbol].iloc[-2]  # Previous day's closing price
-            
-            # Get the current day's last close price (for comparison)
-            current_price = stock_data[symbol].iloc[-1]  # Today's most recent price (last row)
+            current_price = stock_data[symbol].iloc[-1]  # Today's most recent price
 
-            # Calculate the percentage change from the previous day's close price
             percentage_change = ((current_price - previous_day_close) / previous_day_close) * 100
 
-            # Only include the data if it is not NaN
             if not (current_price != current_price or previous_day_close != previous_day_close):
                 result_data[symbol] = {
                     "current_price": current_price,
@@ -285,7 +280,6 @@ def get_sector_data():
         print("Error:", e)
         return {"error": str(e)}
 
-# Define the background task function
 def update_sector_data():
     print("Running background task to update sector data...")
     sector_data = get_sector_data()
@@ -301,14 +295,13 @@ def sector_heatmap():
     return jsonify({"status": "success", "data": sector_data})
 
 if __name__ == '__main__':
-    # Set up the scheduler
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=update_sector_data, trigger="interval", seconds=60)  # Run every 60 seconds
+    scheduler.add_job(func=update_sector_data, trigger="interval", seconds=60)
     scheduler.start()
 
-    # Ensure Flask is properly shut down with the scheduler
     try:
-        port = int(os.environ.get("PORT", 5000))  # Railway provides the port dynamically
-        app.run(host='0.0.0.0', port=port, debug=True)  # Use 0.0.0.0 to bind to all network interfaces
+        port = int(os.environ.get("PORT", 5000))
+        app.run(host='0.0.0.0', port=port, debug=True)
     except (KeyboardInterrupt, SystemExit):
         scheduler.shutdown()
+
